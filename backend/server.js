@@ -1,32 +1,39 @@
-import { query } from "./src/config/database.js";
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { initializeDatabase } from './src/config/init-db.js';
+
+// Import routes
 import propertyRoutes from './src/routes/propertyRoutes.js';
-import unitRoutes from "./src/routes/unitRoutes.js";
-import tenantRoutes from "./src/routes/tenantRoutes.js"
+import unitRoutes from './src/routes/unitRoutes.js';
+import tenantRoutes from './src/routes/tenantRoutes.js';
 import leaseRoutes from './src/routes/leaseRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 
+// Load environment variables
 dotenv.config();
 
+// Initialize database on startup
+initializeDatabase().catch(err => {
+    console.error('Failed to initialize database:', err);
+    process.exit(1);
+});
+
+// Create Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}));
-
+// Middleware
+app.use(cors());
 app.use(express.json());
 
+// Request logging
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
     next();
 });
 
-// ROUTES
-
+// Health check
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
@@ -35,60 +42,27 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Database connection test
-app.get('/api/db-test', async (req, res) => {
-    try {
-        const result = await query('SELECT NOW() as current_time');
-        res.json({
-            status: 'connected',
-            database_time: result.rows[0].current_time
-        });
-    } catch (error) {
-        res.status(500).json({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
-
-// Property routes
+// Routes
 app.use('/api/properties', propertyRoutes);
-
-// Unit routes
 app.use('/api/units', unitRoutes);
-
-// Tenant routes
 app.use('/api/tenants', tenantRoutes);
-
-// Lease routes
 app.use('/api/leases', leaseRoutes);
-
-// Auth routes 
 app.use('/api/auth', authRoutes);
 
-
-//ERROR HANDLING
+// 404 handler
 app.use((req, res) => {
-    res.status(404).json({
-        error: 'Route Not Found',
-        path: req.path
-    });
+    res.status(404).json({ error: 'Route not found' });
 });
 
-
-// Global error handler
+// Error handler
 app.use((err, req, res, next) => {
     console.error('Error:', err);
-
     res.status(err.status || 500).json({
-        error: err.message || 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+        error: err.message || 'Internal server error'
     });
 });
 
-// start server
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/api/health`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
