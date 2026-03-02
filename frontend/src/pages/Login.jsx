@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { toast } from 'react-toastify';
+import '../styles/Login.css';
 
 function Login({ setIsAuthenticated }) {
     const [isRegister, setIsRegister] = useState(false);
@@ -23,7 +24,6 @@ function Login({ setIsAuthenticated }) {
                 ? await authAPI.register(formData)
                 : await authAPI.login({ email: formData.email, password: formData.password });
 
-            // Save token
             localStorage.setItem('token', response.data.token);
             setIsAuthenticated(true);
 
@@ -37,83 +37,93 @@ function Login({ setIsAuthenticated }) {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{isRegister ? 'Register' : 'Login'}</h2>
+        <div className="login-page">
+            <div className="login-container">
+                <div className="login-header">
+                    <h1 className="login-logo">🏢</h1>
+                    <h2 className="login-title">{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
+                    <p className="login-subtitle">
+                        {isRegister ? 'Sign up to manage your properties' : 'Sign in to your account'}
+                    </p>
+                </div>
 
-            <form onSubmit={handleSubmit}>
-                {isRegister && (
-                    <>
+                <form onSubmit={handleSubmit} className="login-form">
+                    {isRegister && (
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">First Name</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="John"
+                                    value={formData.first_name}
+                                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Last Name</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Doe"
+                                    value={formData.last_name}
+                                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="form-group">
+                        <label className="form-label">Email Address</label>
                         <input
-                            type="text"
-                            placeholder="First Name"
-                            value={formData.first_name}
-                            onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                            type="email"
+                            className="form-input"
+                            placeholder="you@example.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
-                            style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Password</label>
                         <input
-                            type="text"
-                            placeholder="Last Name"
-                            value={formData.last_name}
-                            onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                            type="password"
+                            className="form-input"
+                            placeholder="••••••••"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             required
-                            style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+                            minLength={6}
                         />
-                    </>
-                )}
+                        {!isRegister && (
+                            <span className="form-hint">Minimum 6 characters</span>
+                        )}
+                    </div>
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100"
+                        disabled={loading}
+                    >
+                        {loading ? 'Processing...' : (isRegister ? 'Create Account' : 'Sign In')}
+                    </button>
+                </form>
 
-                <input
-                    type="password"
-                    placeholder="Password (min 6 characters)"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                    minLength={6}
-                    style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        width: '100%',
-                        padding: '12px',
-                        marginBottom: '10px',
-                        backgroundColor: loading ? '#ccc' : '#007bff',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        fontSize: '16px'
-                    }}
-                >
-                    {loading ? 'Processing...' : (isRegister ? 'Register' : 'Login')}
-                </button>
-            </form>
-
-            <button
-                onClick={() => setIsRegister(!isRegister)}
-                style={{
-                    width: '100%',
-                    padding: '10px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid #007bff',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    color: '#007bff'
-                }}
-            >
-                {isRegister ? 'Already have an account? Login' : 'Need an account? Register'}
-            </button>
+                <div className="login-footer">
+                    <p>
+                        {isRegister ? 'Already have an account?' : "Don't have an account?"}
+                        <button
+                            onClick={() => setIsRegister(!isRegister)}
+                            className="link-button"
+                        >
+                            {isRegister ? 'Sign In' : 'Sign Up'}
+                        </button>
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }

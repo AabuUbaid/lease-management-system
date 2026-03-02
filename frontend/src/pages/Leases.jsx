@@ -53,7 +53,6 @@ function Leases() {
     const handleCreateLease = async (e) => {
         e.preventDefault();
 
-        // Validate dates
         if (new Date(leaseForm.lease_start) >= new Date(leaseForm.lease_end)) {
             toast.error('End date must be after start date');
             return;
@@ -73,7 +72,6 @@ function Leases() {
             });
             fetchData();
         } catch (error) {
-            // Display the overlap error or other backend errors
             const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to create lease';
             toast.error(errorMessage, { autoClose: 5000 });
         }
@@ -87,11 +85,8 @@ function Leases() {
             setShowTenantForm(false);
             setTenantForm({ first_name: '', last_name: '', email: '', phone: '' });
 
-            // Refresh tenants list
             const tenantsRes = await tenantsAPI.getAll();
             setTenants(tenantsRes.data);
-
-            // Auto-select the new tenant
             setLeaseForm({ ...leaseForm, tenant_id: response.data.id });
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to create tenant');
@@ -111,100 +106,117 @@ function Leases() {
     };
 
     if (loading) {
-        return <div style={{ padding: '20px' }}>Loading leases...</div>;
+        return (
+            <div className="loading-container">
+                <div className="spinner"></div>
+            </div>
+        );
     }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h1>Lease Management</h1>
-                <div>
-                    <button onClick={() => navigate('/dashboard')} style={buttonStyle}>Dashboard</button>
-                    <button onClick={() => navigate('/properties')} style={buttonStyle}>Properties</button>
+        <div className="container">
+            <div className="page-header">
+                <h1 className="page-title">Lease Management</h1>
+                <div className="header-actions">
+                    <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
+                        Dashboard
+                    </button>
+                    <button onClick={() => navigate('/properties')} className="btn btn-primary">
+                        Properties
+                    </button>
                     <button onClick={() => {
                         localStorage.removeItem('token');
                         toast.success('Logged out');
                         navigate('/login');
-                    }} style={{ ...buttonStyle, backgroundColor: '#dc3545' }}>Logout</button>
+                    }} className="btn btn-danger">
+                        Logout
+                    </button>
                 </div>
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <div className="flex gap-10 mb-20" style={{ flexWrap: 'wrap' }}>
                 <button
                     onClick={() => setShowLeaseForm(!showLeaseForm)}
-                    style={{ ...buttonStyle, backgroundColor: '#28a745', marginLeft: 0 }}
+                    className="btn btn-success"
                 >
                     {showLeaseForm ? 'Cancel' : '+ New Lease'}
                 </button>
                 <button
                     onClick={() => setShowTenantForm(!showTenantForm)}
-                    style={{ ...buttonStyle, backgroundColor: '#17a2b8', marginLeft: 0 }}
+                    className="btn btn-info"
                 >
                     {showTenantForm ? 'Cancel' : '+ New Tenant'}
                 </button>
             </div>
 
-            {/* Create Tenant Form (Quick Add) */}
             {showTenantForm && (
-                <div style={{ ...formContainerStyle, marginBottom: '20px' }}>
-                    <h3>Create New Tenant</h3>
+                <div className="form-container">
+                    <h3 style={{ marginBottom: '20px' }}>Create New Tenant</h3>
                     <form onSubmit={handleCreateTenant}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <input
-                                type="text"
-                                placeholder="First Name"
-                                value={tenantForm.first_name}
-                                onChange={(e) => setTenantForm({ ...tenantForm, first_name: e.target.value })}
-                                required
-                                style={inputStyle}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Last Name"
-                                value={tenantForm.last_name}
-                                onChange={(e) => setTenantForm({ ...tenantForm, last_name: e.target.value })}
-                                required
-                                style={inputStyle}
-                            />
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={tenantForm.email}
-                                onChange={(e) => setTenantForm({ ...tenantForm, email: e.target.value })}
-                                required
-                                style={inputStyle}
-                            />
-                            <input
-                                type="tel"
-                                placeholder="Phone (optional)"
-                                value={tenantForm.phone}
-                                onChange={(e) => setTenantForm({ ...tenantForm, phone: e.target.value })}
-                                style={inputStyle}
-                            />
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="form-label">First Name</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="John"
+                                    value={tenantForm.first_name}
+                                    onChange={(e) => setTenantForm({ ...tenantForm, first_name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Last Name</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Doe"
+                                    value={tenantForm.last_name}
+                                    onChange={(e) => setTenantForm({ ...tenantForm, last_name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    className="form-input"
+                                    placeholder="john@example.com"
+                                    value={tenantForm.email}
+                                    onChange={(e) => setTenantForm({ ...tenantForm, email: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Phone (optional)</label>
+                                <input
+                                    type="tel"
+                                    className="form-input"
+                                    placeholder="555-1234"
+                                    value={tenantForm.phone}
+                                    onChange={(e) => setTenantForm({ ...tenantForm, phone: e.target.value })}
+                                />
+                            </div>
                         </div>
-                        <button type="submit" style={{ ...buttonStyle, backgroundColor: '#17a2b8', marginLeft: 0 }}>
+                        <button type="submit" className="btn btn-info w-100">
                             Create Tenant
                         </button>
                     </form>
                 </div>
             )}
 
-            {/* Create Lease Form */}
             {showLeaseForm && (
-                <div style={{ ...formContainerStyle, marginBottom: '20px' }}>
-                    <h3>Create New Lease</h3>
+                <div className="form-container">
+                    <h3 style={{ marginBottom: '20px' }}>Create New Lease</h3>
                     <form onSubmit={handleCreateLease}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                            {/* Unit Selection */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Unit *</label>
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="form-label">Unit *</label>
                                 <select
+                                    className="form-select"
                                     value={leaseForm.unit_id}
                                     onChange={(e) => setLeaseForm({ ...leaseForm, unit_id: e.target.value })}
                                     required
-                                    style={inputStyle}
                                 >
                                     <option value="">Select a unit...</option>
                                     {units.map(unit => (
@@ -215,14 +227,13 @@ function Leases() {
                                 </select>
                             </div>
 
-                            {/* Tenant Selection */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Tenant *</label>
+                            <div className="form-group">
+                                <label className="form-label">Tenant *</label>
                                 <select
+                                    className="form-select"
                                     value={leaseForm.tenant_id}
                                     onChange={(e) => setLeaseForm({ ...leaseForm, tenant_id: e.target.value })}
                                     required
-                                    style={inputStyle}
                                 >
                                     <option value="">Select a tenant...</option>
                                     {tenants.map(tenant => (
@@ -233,185 +244,123 @@ function Leases() {
                                 </select>
                             </div>
 
-                            {/* Lease Start Date */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Lease Start Date *</label>
+                            <div className="form-group">
+                                <label className="form-label">Lease Start Date *</label>
                                 <input
                                     type="date"
+                                    className="form-input"
                                     value={leaseForm.lease_start}
                                     onChange={(e) => setLeaseForm({ ...leaseForm, lease_start: e.target.value })}
                                     required
-                                    style={inputStyle}
                                 />
                             </div>
 
-                            {/* Lease End Date */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Lease End Date *</label>
+                            <div className="form-group">
+                                <label className="form-label">Lease End Date *</label>
                                 <input
                                     type="date"
+                                    className="form-input"
                                     value={leaseForm.lease_end}
                                     onChange={(e) => setLeaseForm({ ...leaseForm, lease_end: e.target.value })}
                                     required
-                                    style={inputStyle}
                                 />
                             </div>
 
-                            {/* Monthly Rent */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Monthly Rent ($) *</label>
+                            <div className="form-group">
+                                <label className="form-label">Monthly Rent ($) *</label>
                                 <input
                                     type="number"
+                                    className="form-input"
                                     placeholder="1500"
                                     value={leaseForm.monthly_rent}
                                     onChange={(e) => setLeaseForm({ ...leaseForm, monthly_rent: e.target.value })}
                                     required
                                     min="0"
                                     step="0.01"
-                                    style={inputStyle}
                                 />
                             </div>
 
-                            {/* Security Deposit */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Security Deposit ($)</label>
+                            <div className="form-group">
+                                <label className="form-label">Security Deposit ($)</label>
                                 <input
                                     type="number"
+                                    className="form-input"
                                     placeholder="3000"
                                     value={leaseForm.security_deposit}
                                     onChange={(e) => setLeaseForm({ ...leaseForm, security_deposit: e.target.value })}
                                     min="0"
                                     step="0.01"
-                                    style={inputStyle}
                                 />
                             </div>
                         </div>
 
-                        <button type="submit" style={{ ...buttonStyle, width: '100%', backgroundColor: '#28a745', marginLeft: 0, marginTop: '10px' }}>
+                        <button type="submit" className="btn btn-success w-100 mt-20">
                             Create Lease
                         </button>
                     </form>
                 </div>
             )}
 
-            {/* Leases List */}
-            <div style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
-                <h2>All Leases ({leases.length})</h2>
+            <div className="table-container">
+                <h2 style={{ marginBottom: '20px' }}>All Leases ({leases.length})</h2>
 
                 {leases.length === 0 ? (
-                    <p style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                        No leases yet. Create your first lease above!
-                    </p>
-                ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #ddd' }}>
-                                    <th style={tableHeaderStyle}>Property</th>
-                                    <th style={tableHeaderStyle}>Unit</th>
-                                    <th style={tableHeaderStyle}>Tenant</th>
-                                    <th style={tableHeaderStyle}>Start Date</th>
-                                    <th style={tableHeaderStyle}>End Date</th>
-                                    <th style={tableHeaderStyle}>Monthly Rent</th>
-                                    <th style={tableHeaderStyle}>Status</th>
-                                    <th style={tableHeaderStyle}>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {leases.map(lease => {
-                                    const today = new Date();
-                                    const start = new Date(lease.lease_start);
-                                    const end = new Date(lease.lease_end);
-                                    const isActive = today >= start && today <= end;
-                                    const isFuture = today < start;
-                                    const isPast = today > end;
-
-                                    return (
-                                        <tr key={lease.id} style={{ borderBottom: '1px solid #ddd' }}>
-                                            <td style={tableCellStyle}>{lease.property_name}</td>
-                                            <td style={tableCellStyle}>{lease.unit_number}</td>
-                                            <td style={tableCellStyle}>{lease.first_name} {lease.last_name}</td>
-                                            <td style={tableCellStyle}>{new Date(lease.lease_start).toLocaleDateString()}</td>
-                                            <td style={tableCellStyle}>{new Date(lease.lease_end).toLocaleDateString()}</td>
-                                            <td style={tableCellStyle}>${lease.monthly_rent}</td>
-                                            <td style={tableCellStyle}>
-                                                <span style={{
-                                                    padding: '4px 8px',
-                                                    borderRadius: '12px',
-                                                    fontSize: '12px',
-                                                    fontWeight: 'bold',
-                                                    backgroundColor: isActive ? '#d4edda' : isFuture ? '#fff3cd' : '#f8d7da',
-                                                    color: isActive ? '#155724' : isFuture ? '#856404' : '#721c24'
-                                                }}>
-                                                    {isActive ? '✓ Active' : isFuture ? '⏳ Future' : '✕ Expired'}
-                                                </span>
-                                            </td>
-                                            <td style={tableCellStyle}>
-                                                <button
-                                                    onClick={() => handleDeleteLease(lease.id)}
-                                                    style={{ ...smallButtonStyle, backgroundColor: '#dc3545' }}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                    <div className="text-center" style={{ padding: '60px 20px', color: '#7f8c8d' }}>
+                        <div style={{ fontSize: '48px', marginBottom: '10px' }}>📋</div>
+                        <p>No leases yet. Create your first lease above!</p>
                     </div>
+                ) : (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Unit</th>
+                                <th>Tenant</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Monthly Rent</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {leases.map(lease => {
+                                const today = new Date();
+                                const start = new Date(lease.lease_start);
+                                const end = new Date(lease.lease_end);
+                                const isActive = today >= start && today <= end;
+                                const isFuture = today < start;
+
+                                return (
+                                    <tr key={lease.id}>
+                                        <td>{lease.property_name}</td>
+                                        <td>{lease.unit_number}</td>
+                                        <td>{lease.first_name} {lease.last_name}</td>
+                                        <td>{new Date(lease.lease_start).toLocaleDateString()}</td>
+                                        <td>{new Date(lease.lease_end).toLocaleDateString()}</td>
+                                        <td>${lease.monthly_rent}</td>
+                                        <td>
+                                            <span className={`badge ${isActive ? 'badge-success' : isFuture ? 'badge-warning' : 'badge-danger'}`}>
+                                                {isActive ? '✓ Active' : isFuture ? '⏳ Future' : '✕ Expired'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button
+                                                onClick={() => handleDeleteLease(lease.id)}
+                                                className="btn btn-danger btn-small"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 )}
             </div>
         </div>
     );
 }
-
-// Styles
-const buttonStyle = {
-    padding: '10px 20px',
-    marginLeft: '10px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px'
-};
-
-const smallButtonStyle = {
-    padding: '6px 12px',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '12px'
-};
-
-const formContainerStyle = {
-    padding: '20px',
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #ddd',
-    borderRadius: '8px'
-};
-
-const inputStyle = {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    fontSize: '14px'
-};
-
-const tableHeaderStyle = {
-    padding: '12px',
-    textAlign: 'left',
-    fontWeight: 'bold'
-};
-
-const tableCellStyle = {
-    padding: '12px',
-    textAlign: 'left'
-};
 
 export default Leases;
