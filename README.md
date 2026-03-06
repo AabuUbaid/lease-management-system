@@ -2,8 +2,21 @@
 
 A full-stack web application for managing property leases with automated conflict detection and role-based access control.
 
+## 🌐 Live Demo
+
+**Try it now:** [https://lease-management-system-theta.vercel.app](https://lease-management-system-theta.vercel.app)
+
+**Demo Credentials:**
+- Create your own account, or use:
+- Email: `demo@example.com`
+- Password: `demo123` (if you want to create a demo account)
+
+**Backend API:** [https://lease-management-system.onrender.com/api/health](https://lease-management-system.onrender.com/api/health)
+
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+---
 
 ## 📋 Table of Contents
 
