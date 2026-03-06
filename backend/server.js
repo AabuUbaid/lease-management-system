@@ -32,7 +32,7 @@ const corsOptions = {
 
         const allowedOrigins = [
             'http://localhost:5173',  // Local development
-            'https://lease-management-system.vercel.app',  // Production (update after Vercel deployment)
+            'https://lease-management-system-theta.vercel.app',  // Production (update after Vercel deployment)
             /\.vercel\.app$/  // Allow all Vercel preview deployments
         ];
 
