@@ -252,14 +252,10 @@ users (id, email, password_hash, first_name, last_name, role, created_at)
 ## 👨‍💻 Author
 
 **Your Name**
-- Email: your@email.com
-- LinkedIn: [Your LinkedIn Profile]
-- GitHub: [Your GitHub Profile]
-- Portfolio: [Your Portfolio Website]
-
-## 📄 License
-
-This project is licensed under the MIT License.
+- Email: abuubaid.hilar@gmail.com
+- LinkedIn:https://www.linkedin.com/in/aabu-ubaid/
+- GitHub: https://github.com/AabuUbaid/
+- Portfolio: https://aabuubaid.github.io/portfolio/
 
 ## 🙏 Acknowledgments
 
